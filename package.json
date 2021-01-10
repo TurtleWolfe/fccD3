@@ -1,0 +1,24 @@
+{
+  "name": "fccd3",
+  "version": "1.0.0",
+  "description": "Template for the Data Visualization with D3 Challenges at freeCodeCamp.com",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "gh-pages -d dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TurtleWolfe/fccD3.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TurtleWolfe/fccD3/issues"
+  },
+  "homepage": "https://github.com/TurtleWolfe/fccD3#readme",
+  "devDependencies": {
+    "gh-pages": "^3.1.0"
+  }
+}
