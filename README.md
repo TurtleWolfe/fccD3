@@ -19,5 +19,13 @@ touch about.html
 cd ..
 git add .
 git commit -m "first commit"
+git push --set-upstream origin master
 npm run deploy
+```
+
+```json
+"scripts": {
+    "deploy": "gh-pages -d dist"
+  },
+"homepage": "https://turtlewolfe.github.io/fccD3/",
 ```
