@@ -12,7 +12,16 @@ body {
 circle {
   r: 5;
   fill: black;
+  /* add this transition to original code */
+  transition: r 0.5s linear, fill 0.5s linear;
 }
+
+/* add this css for the hover state */
+circle:hover {
+  r: 10;
+  fill: blue;
+}
+
 svg {
   /* width: 100%; height: 100%; background: #f00; */
   border: 1px solid black;
