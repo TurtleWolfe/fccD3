@@ -22,7 +22,11 @@ circle:hover {
   fill: blue;
 }
 
-svg {
+circle:active {
+  fill: red;
+}
+
+#container {
   /* width: 100%; height: 100%; background: #f00; */
   border: 1px solid black;
   overflow: visible;
