@@ -34,7 +34,7 @@ let runs = [
 let WIDTH = 400;
 let HEIGHT = 300;
 
-d3.select('svg')
+d3.select('#container')
   .style("fill", "yellow")
   // .text("svg")
   .style('WIDTH', WIDTH)
@@ -62,16 +62,23 @@ yScale.domain(yDomain);
 var render = function () {
   //adjust the code at the top of your render function
   //clear out all circles when rendering
-  d3.select('#points').html('');
+
+  // d3.select('#points').html('');
+
   //add circles to #points group, not svg
-  d3.select('#points').selectAll('circle')
-    .data(runs) //attach the data as before
-    //find the data objects that have not yet 
-    //been attached to visual elements
-    .enter()
+  var circles = d3.select('#points')
+    .selectAll('circle')
+    .data(runs, function (datum) {
+      return datum.id;
+    }); //attach the data as before
+  //find the data objects that have not yet 
+  //been attached to visual elements
+  circles.enter()
     //for each data object that hasn't been attached,
     //append a <circle> to the <svg>
     .append('circle');
+  circles.exit()
+    .remove();
   d3.selectAll('circle')
     .attr('cy', function (datum, index) {
       return yScale(datum.distance);
@@ -102,22 +109,54 @@ var render = function () {
     createTable(); //re-render table
   });
 
+
+  var dragEnd = function (datum) {
+    var x = d3.event.x;
+    var y = d3.event.y;
+
+    var date = xScale.invert(x);
+    var distance = yScale.invert(y);
+
+    datum.date = formatTime(date);
+    datum.distance = distance;
+    createTable();
+  };
+
+
+  //put this code at the end of the render function
+  var drag = function (datum) {
+    var x = d3.event.x;
+    var y = d3.event.y;
+    d3.select(this).attr('cx', x);
+    d3.select(this).attr('cy', y);
+  };
+  var dragBehavior = d3.drag()
+    .on('drag', drag)
+    .on('end', dragEnd);
+  d3.selectAll('circle').call(dragBehavior);
+
 };
 render();
 
+
+
 //pass the appropriate scale in as a parameter
 var bottomAxis = d3.axisBottom(xScale);
-d3.select('svg')
+d3.select('#container')
   .append('g') //put everything inside a group
+  .attr('id', 'x-axis') //add an id
   .call(bottomAxis) //generate the axis within the group
   //move it to the bottom
   .attr('transform', 'translate(0,' + HEIGHT + ')');
 
 var leftAxis = d3.axisLeft(yScale);
-d3.select('svg')
+d3.select('#container')
   .append('g')
+  .attr('id', 'y-axis') //add an id
   //no need to transform, since it's placed correctly initially
   .call(leftAxis);
+
+
 
 
 var createTable = function () {
@@ -135,11 +174,16 @@ createTable();
 
 // Chapter 4
 // our <svg> click handler:
-d3.select('svg').on('click', function () {
+d3.select('#container').on('click', function () {
   //gets the x position of the mouse relative to the svg element
   var x = d3.event.offsetX;
   //gets the y position of the mouse relative to the svg element
   var y = d3.event.offsetY;
+
+  if (lastTransform !== null) {
+    x = lastTransform.invertX(d3.event.offsetX);
+    y = lastTransform.invertY(d3.event.offsetY);
+  }
 
   //get a date value from the visual point that we clicked on
   var date = xScale.invert(x);
@@ -162,5 +206,17 @@ d3.select('svg').on('click', function () {
   render(); //add this line
 });
 
+var lastTransform = null; //add this
+var zoomCallback = function () {
+  lastTransform = d3.event.transform; //add this
+  d3.select('#points').attr("transform", d3.event.transform);
+  d3.select('#x-axis')
+    .call(bottomAxis.scale(d3.event.transform.rescaleX(xScale)));
+  d3.select('#y-axis')
+    .call(leftAxis.scale(d3.event.transform.rescaleY(yScale)));
+};
 
-var yScale = d3.scaleLinear();
+var zoom = d3.zoom()
+  .on('zoom', zoomCallback);
+d3.select('#container').call(zoom);
+
